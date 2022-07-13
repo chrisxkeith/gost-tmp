@@ -17,6 +17,6 @@ nvm install 14.19.0                                         ; if [ $? -ne 0 ] ; 
 npm i yarn@^1.22.4 -g                                       ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
 cd packages/client                                          ; if [ $? -ne 0 ] ; then exit -6 ; fi
-cp .env.example env                                         ; if [ $? -ne 0 ] ; then exit -6 ; fi
+cp .env.example .env                                         ; if [ $? -ne 0 ] ; then exit -6 ; fi
 cd ../server                                                ; if [ $? -ne 0 ] ; then exit -6 ; fi
 cat .env.example | grep -v "^#." > .env                     ; if [ $? -ne 0 ] ; then exit -6 ; fi
