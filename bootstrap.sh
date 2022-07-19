@@ -3,7 +3,7 @@
 
 # Automate as much of WSL setup as possible.
 # If anything fails, bail out.
-# You will have to manually provide the sudo password the first time.
+# You may have to manually provide the sudo password the first time.
 
 sudo apt install nodejs -y                                  ; if [ $? -ne 0 ] ; then exit -6 ; fi
 sudo apt install npm -y                                     ; if [ $? -ne 0 ] ; then exit -6 ; fi
