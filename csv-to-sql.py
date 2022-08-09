@@ -36,16 +36,19 @@ class CsvToSql:
             values += (comma + colName + ' = ' + row[colName])
         return 'UPDATE ' + tableName + ' SET ' + values + ' WHERE id = ' + row['id'] + ';'
 
+    def createDelete(self, row, tableName):
+        return 'DELETE FROM ' + tableName + ' WHERE id = ' + row['id'] + ';'
+
     def createOneSQL(self, row, columnNames, tableName):
         if row['sql_operation'] == 'UPDATED':
             self.updates += 1
             return self.createInsert(row, columnNames, tableName)
         if row['sql_operation'] == 'DELETED':
             self.deletes += 1
-            return '/* delete not implemented yet */'
+            return '/* ' + self.createDelete(row, tableName) + ' */'
         if row['sql_operation'] == 'INSERTED':
             self.inserts += 1
-            return '/* insert not implemented yet */'
+            return '/* INSERT not implemented yet */'
         self.unprocessed += 1
         return ''
 
