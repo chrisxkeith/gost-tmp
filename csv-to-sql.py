@@ -1,5 +1,5 @@
 ''' Convert CSV files downloaded from Google Sheets into SQL files for updating records in GOST Postgres databases.
-UPDATEs implemented, but not DELETEs (destructive, and not too many) or INSERTs (until needed).
+UPDATEs implemented, but not DELETEs (destructive, and not too many, so do them manually) or INSERTs (until needed).
 File names are hardcoded in the run() function.
 '''
 import csv
