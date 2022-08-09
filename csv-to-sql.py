@@ -5,7 +5,10 @@ import time
 
 class CsvToSql:
     def __init__(self):
-        pass
+        self.updates = 0
+        self.inserts = 0
+        self.deletes = 0
+        self.unprocessed = 0
 
     def log(self, message):
         timeTag = datetime.now()
@@ -32,14 +35,22 @@ class CsvToSql:
 
     def createOneSQL(self, row, columnNames, tableName):
         if row['sql_operation'] == 'UPDATED':
+            self.updates += 1
             return self.createInsert(row, columnNames, tableName)
         if row['sql_operation'] == 'DELETED':
+            self.deletes += 1
             return '/* delete not implemented yet */'
         if row['sql_operation'] == 'INSERTED':
+            self.inserts += 1
             return '/* insert not implemented yet */'
+        self.unprocessed += 1
         return ''
 
     def writeOneSQL(self, fileName):
+        self.updates = 0
+        self.inserts = 0
+        self.deletes = 0
+        self.unprocessed = 0
         columnNames = []
         tableName = ''
         if 'Users' in fileName:
@@ -49,15 +60,21 @@ class CsvToSql:
             columnNames = ['parent', 'main_agency_id', 'tenant_id']
             tableName = 'agencies'
         sqls = []
+        inputRows = 0
         with open(fileName + '.csv', 'r', newline='') as csv_file:
-                csvreader = csv.DictReader(csv_file)
-                for row in csvreader:
-                    sql = self.createOneSQL(row, columnNames, tableName)
-                    if sql:
-                        sqls.append(sql + '\n')
+            csvreader = csv.DictReader(csv_file)
+            for row in csvreader:
+                inputRows += 1
+                sql = self.createOneSQL(row, columnNames, tableName)
+                if sql:
+                    sqls.append(sql + '\n')
         with open(fileName + '.sql', 'w', newline='') as sql_file:
             sql_file.writelines(sqls)
-            self.log('Wrote ' + fileName + '.sql')
+            self.log('Wrote ' + fileName + '.sql : inputRows: ' + str(inputRows) +
+                ', Updates: ' +  str(self.updates) +
+                ', Deletes: ' + str(self.deletes) +
+                ', Inserts: ' + str(self.inserts) +
+                ', unprocessed: ' + str(self.unprocessed))
 
     def run(self):
         self.log('Started')
