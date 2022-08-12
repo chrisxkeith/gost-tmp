@@ -1,4 +1,4 @@
 *_x.sh
 *.sql
 *.csv
-
+node_modules/**
