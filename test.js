@@ -2,10 +2,13 @@
 // Run using command line: .\node_modules\mocha\bin\mocha
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const assert = require('assert')
-const readline = require('readline');
+
+async function sleep(secs) {
+  return new Promise(resolve => setTimeout(resolve, secs * 1000));
+}
 
 describe('t1', function() {
-  this.timeout(30000)
+  this.timeout(60 * 60 * 1000)
   let driver
   let vars
   beforeEach(async function() {
@@ -15,17 +18,53 @@ describe('t1', function() {
   afterEach(async function() {
     await driver.quit();
   })
-  it('t1', async function() {
-    await driver.get("https://gost-grants-tools-staging.onrender.com/")
-    await driver.manage().window().setRect({ width: 1913, height: 766 })
-    await driver.manage().addCookie({ name: 'userId', value: 's:27.KhnoslA3oBEyppwsBGd3q7x7S6Yre+4rUPWCXvtMepM' });
-    driver.navigate().refresh();
-
+  async function getGrantCount() {
+    // <button type="button" class="btn ml-2 btn-outline-primary disabled">10 of 15</button>
+    // <button type="button" class="btn ml-2 btn-outline-primary disabled">10 of 15</button>
+    // #__BVID__75 > section > div.row.align-items-center > button
+    // document.querySelector("#__BVID__75 > section > div.row.align-items-center > button")
+    // 
+    // //*[@id="__BVID__75"]/section/div[3]/button
+  } 
+  async function getMyGrants() {
+    // paging if necessary
     let myGrants = await driver.wait(until.elementLocated(By.linkText("My Grants")), 10000)
     await myGrants.click()
+
 
     let ele = await driver.wait(until.elementLocated(By.css("tbody > tr:nth-child(1) > .table-dark")), 10000)
     txt = await ele.getText()
     console.log(txt)
+  }
+  async function getAllGrants() {
+  }
+  async function findNewGrant(myGrants, allGrants) {
+  }
+  async function addGrantToMyGrants(grantId) {
+    // which sub-status?
+  }
+  async function verifyGrantInList(grantId) {
+  }
+  async function removeGrantFromMyGrants(grantId) {
+  }
+  async function verifyGrantNotInList(grantId) {
+  }
+  it('t1', async function() {
+    const staging = 'https://gost-grants-tools-staging.onrender.com'  
+    const production = 'https://grants.usdigitalresponse.org'
+    const chrisKeithCookie = 's:27.KhnoslA3oBEyppwsBGd3q7x7S6Yre+4rUPWCXvtMepM' // Will cookie expire?
+    
+    await driver.get(staging)
+    await driver.manage().window().setRect({ width: 1913, height: 766 })
+    await driver.manage().addCookie({ name: 'userId', value: chrisKeithCookie });
+    driver.navigate().refresh();
+    myGrants = getMyGrants()
+    allGrants = getAllGrants()
+    newGrantId = findNewGrant(myGrants, allGrants) // Find a grant not in that list.
+    addGrantToMyGrants(newGrantId)
+    verifyGrantInList(newGrantId)
+    removeGrantFromMyGrants(newGrantId)
+    verifyGrantNotInList(newGrantId)
+    await sleep(60 * 60)
   })
 })
