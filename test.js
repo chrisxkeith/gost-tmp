@@ -4,11 +4,6 @@ const { Builder, By, Key, until } = require('selenium-webdriver')
 const assert = require('assert')
 const readline = require('readline');
 
-const rl = readline.createInterface({
-  input: process.stdin, 
-  output: process.stdout
-});
-
 describe('t1', function() {
   this.timeout(30000)
   let driver
@@ -23,17 +18,14 @@ describe('t1', function() {
   it('t1', async function() {
     await driver.get("https://gost-grants-tools-staging.onrender.com/")
     await driver.manage().window().setRect({ width: 1913, height: 766 })
-    await driver.findElement(By.id("email")).sendKeys("chris.keith@gmail.com")
-    await driver.findElement(By.css(".btn")).click()
+    await driver.manage().addCookie({ name: 'userId', value: 's:27.KhnoslA3oBEyppwsBGd3q7x7S6Yre+4rUPWCXvtMepM' });
+    driver.navigate().refresh();
 
-    console.log('Go to your email, copy the login link and paste into the browser, then press Enter.')
-    const it = rl[Symbol.asyncIterator]()
-    await it.next()
-    rl.close()
+    let myGrants = await driver.wait(until.elementLocated(By.linkText("My Grants")), 10000)
+    await myGrants.click()
 
-    await driver.manage().window().setRect({ width: 1699, height: 1002 })
-    await driver.findElement(By.linkText("My Grants")).click()
-
-//    assert(await driver.findElement(By.css("tbody > tr:nth-child(1) > .table-dark")))
+    let ele = await driver.wait(until.elementLocated(By.css("tbody > tr:nth-child(1) > .table-dark")), 10000)
+    txt = await ele.getText()
+    console.log(txt)
   })
 })
