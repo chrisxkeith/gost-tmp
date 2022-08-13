@@ -27,8 +27,9 @@ describe('t1', function() {
     await driver.findElement(By.css(".btn")).click()
 
     console.log('Go to your email, copy the login link and paste into the browser, then press Enter.')
-    const it = rl[Symbol.asyncIterator]();
-    await it.next();
+    const it = rl[Symbol.asyncIterator]()
+    await it.next()
+    rl.close()
 
     await driver.manage().window().setRect({ width: 1699, height: 1002 })
     await driver.findElement(By.linkText("My Grants")).click()
