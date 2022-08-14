@@ -25,16 +25,27 @@ describe('t1', function() {
     // document.querySelector("#__BVID__75 > section > div.row.align-items-center > button")
     // 
     // //*[@id="__BVID__75"]/section/div[3]/button
+    return -1
+    let ele = await driver.wait(until.elementLocated(By.css("btn ml-2 btn-outline-primary disabled")), 10000)
+    let txt = await ele.getText()
+    let counts = txt.split(' of ')
+    if (counts.length != 2) {
+      console.log('Could not get counts from: ' + txt)
+      return -1
+    }
+    return parseInt(counts[1])
   } 
   async function getMyGrants() {
     // paging if necessary
     let myGrants = await driver.wait(until.elementLocated(By.linkText("My Grants")), 10000)
     await myGrants.click()
-
-
-    let ele = await driver.wait(until.elementLocated(By.css("tbody > tr:nth-child(1) > .table-dark")), 10000)
-    txt = await ele.getText()
-    console.log(txt)
+    let numMyGrants = await getGrantCount()
+    console.log(numMyGrants)
+    if (numMyGrants > 0) {
+      let ele = await driver.wait(until.elementLocated(By.css("tbody > tr:nth-child(1) > .table-dark")), 10000)
+      txt = await ele.getText()
+      console.log(txt)
+    }
   }
   async function getAllGrants() {
   }
