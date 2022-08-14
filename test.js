@@ -18,34 +18,40 @@ describe('t1', function() {
   afterEach(async function() {
     await driver.quit();
   })
+    // BVID number is dynamic, don't use:
+    // selector: #__BVID__87 > section > div.row.align-items-center > button
+    // JS Path : document.querySelector("#__BVID__87 > section > div.row.align-items-center > button")
+    // XPath: //*[@id="__BVID__87"]/section/div[3]/button
   async function getGrantCount() {
-    // <button type="button" class="btn ml-2 btn-outline-primary disabled">10 of 15</button>
-    // <button type="button" class="btn ml-2 btn-outline-primary disabled">10 of 15</button>
-    // #__BVID__75 > section > div.row.align-items-center > button
-    // document.querySelector("#__BVID__75 > section > div.row.align-items-center > button")
-    // 
-    // //*[@id="__BVID__75"]/section/div[3]/button
-    return -1
-    let ele = await driver.wait(until.elementLocated(By.css("btn ml-2 btn-outline-primary disabled")), 10000)
+    let ele = await driver.wait(until.elementLocated(By.xpath("/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/button")), 10000)
     let txt = await ele.getText()
     let counts = txt.split(' of ')
     if (counts.length != 2) {
-      console.log('Could not get counts from: ' + txt)
-      return -1
+      throw new Error('Could not get grant count from: ' + txt)
     }
     return parseInt(counts[1])
   } 
   async function getMyGrants() {
-    // paging if necessary
     let myGrants = await driver.wait(until.elementLocated(By.linkText("My Grants")), 10000)
     await myGrants.click()
     let numMyGrants = await getGrantCount()
-    console.log(numMyGrants)
-    if (numMyGrants > 0) {
-      let ele = await driver.wait(until.elementLocated(By.css("tbody > tr:nth-child(1) > .table-dark")), 10000)
+    let ret = []
+    while (numMyGrants > 0) {
+      let rowIndex = 1
+      let ele = await driver.wait(until.elementLocated(By.xpath(
+          '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[2]/table/tbody/tr[' + rowIndex  + '1]/td[1]')), 10000)
       txt = await ele.getText()
-      console.log(txt)
+      ret.push(txt)
+      rowIndex++
+      if (rowIndex > 11) {
+        let ele = await driver.wait(until.elementLocated(By.xpath(
+            '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/ul/li[4]/button')), 10000)
+        await ele.click()
+        rowIndex = 1
+      }
+      numMyGrants--
     }
+    return ret
   }
   async function getAllGrants() {
   }
@@ -69,13 +75,13 @@ describe('t1', function() {
     await driver.manage().window().setRect({ width: 1913, height: 766 })
     await driver.manage().addCookie({ name: 'userId', value: chrisKeithCookie });
     driver.navigate().refresh();
-    myGrants = getMyGrants()
-    allGrants = getAllGrants()
-    newGrantId = findNewGrant(myGrants, allGrants) // Find a grant not in that list.
-    addGrantToMyGrants(newGrantId)
-    verifyGrantInList(newGrantId)
-    removeGrantFromMyGrants(newGrantId)
-    verifyGrantNotInList(newGrantId)
+    let myGrants = await getMyGrants()
+    let allGrants = await getAllGrants()
+    let newGrantId = await findNewGrant(myGrants, allGrants) // Find a grant not in that list.
+    await addGrantToMyGrants(newGrantId)
+    await verifyGrantInList(newGrantId)
+    await removeGrantFromMyGrants(newGrantId)
+    await verifyGrantNotInList(newGrantId)
     await sleep(60 * 60)
   })
 })
