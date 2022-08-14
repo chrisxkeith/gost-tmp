@@ -22,6 +22,7 @@ describe('t1', function() {
     // selector: #__BVID__87 > section > div.row.align-items-center > button
     // JS Path : document.querySelector("#__BVID__87 > section > div.row.align-items-center > button")
     // XPath: //*[@id="__BVID__87"]/section/div[3]/button
+    // Use functions? https://stackoverflow.com/questions/12495723/using-xpath-wildcards-in-attributes-in-selenium-webdriver
   async function getGrantCount() {
     let ele = await driver.wait(until.elementLocated(By.xpath("/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/button")), 10000)
     let txt = await ele.getText()
@@ -72,9 +73,9 @@ describe('t1', function() {
     const chrisKeithCookie = 's:27.KhnoslA3oBEyppwsBGd3q7x7S6Yre+4rUPWCXvtMepM' // Will cookie expire?
     
     await driver.get(staging)
-    await driver.manage().window().setRect({ width: 1913, height: 766 })
     await driver.manage().addCookie({ name: 'userId', value: chrisKeithCookie });
     driver.navigate().refresh();
+    await driver.manage().window().maximize()
     let myGrants = await getMyGrants()
     let allGrants = await getAllGrants()
     let newGrantId = await findNewGrant(myGrants, allGrants) // Find a grant not in that list.
