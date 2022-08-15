@@ -21,45 +21,71 @@ describe('t1', function() {
   afterEach(async function() {
     await driver.quit();
   })
-    // BVID number is dynamic, don't use it to find element. May be able to use a wildcard, see:
-    // https://stackoverflow.com/questions/12495723/using-xpath-wildcards-in-attributes-in-selenium-webdriver
-    // selector: #__BVID__87 > section > div.row.align-items-center > button
-    // JS Path : document.querySelector("#__BVID__87 > section > div.row.align-items-center > button")
-    // XPath: //*[@id="__BVID__87"]/section/div[3]/button
   async function getGrantCount() {
-    let ele = await driver.wait(until.elementLocated(By.xpath("/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/button")), 10000)
-    let txt = await ele.getText()
-    let counts = txt.split(' of ')
-    if (counts.length != 2) {
-      throw new Error('Could not get grant count from: ' + txt)
+    let numGrants = 0
+    let retries = 30
+    while (retries > 0 && numGrants == 0) {
+      let ele = await driver.wait(until.elementLocated(By.xpath("/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/button")), 10000)
+      let txt = await ele.getText()
+      let counts = txt.split(' of ')
+      if (counts.length != 2) {
+        throw new Error('Could not get grant count from: ' + txt)
+      }
+      numGrants = parseInt(counts[1])
+      if (numGrants == 0) {
+        await sleep(1)
+      }
+      retries--
     }
-    return parseInt(counts[1])
-  } 
-  async function getMyGrants() {
-    let myGrants = await driver.wait(until.elementLocated(By.linkText("My Grants")), 10000)
+    return numGrants
+  }
+  async function goToTab(tabName) {
+    let myGrants = await driver.wait(until.elementLocated(By.linkText(tabName)), 10000)
     await myGrants.click()
+  } 
+  async function getGrantIdAtIndex(idList, rowIndex) {
+    let ele = await driver.wait(until.elementLocated(By.xpath(
+        '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[2]/table/tbody/tr[' + rowIndex  + ']/td[1]')), 10000)
+    return await ele.getText()
+  } 
+  async function goToNextPage() {
+    let ele = await driver.wait(until.elementLocated(By.xpath(
+      '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/ul/li[4]/button')), 10000)
+    await ele.click()
+  }
+  async function getMyGrants() {
+    await goToTab("My Grants")
     let numMyGrants = await getGrantCount()
-    let ret = []
+    let ret = new Set()
+    let rowIndex = 1
     while (numMyGrants > 0) {
-      let rowIndex = 1
-      let ele = await driver.wait(until.elementLocated(By.xpath(
-          '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[2]/table/tbody/tr[' + rowIndex  + '1]/td[1]')), 10000)
-      txt = await ele.getText()
-      ret.push(txt)
+      ret.add(await getGrantIdAtIndex(ret, rowIndex))
       rowIndex++
-      if (rowIndex > 11) {
-        let ele = await driver.wait(until.elementLocated(By.xpath(
-            '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/ul/li[4]/button')), 10000)
-        await ele.click()
+      if (rowIndex > 10) {
+        await goToNextPage()
         rowIndex = 1
       }
       numMyGrants--
     }
     return ret
   }
-  async function getAllGrants() {
-  }
-  async function findNewGrant(myGrants, allGrants) {
+  async function findNewGrant(myGrants) {
+    await goToTab("Grants")
+    let numGrants = await getGrantCount()
+    let rowIndex = 1
+    while (numGrants > 0) {
+      grantId = await getGrantIdAtIndex(ret, rowIndex)
+      if (!myGrants.has(grantID)) {
+        return grantId
+      }
+      rowIndex++
+      if (rowIndex > 10) {
+        await goToNextPage()
+        rowIndex = 1
+      }
+      numGrants--
+    }
+    throw new Error('Could not find unassigned grant.')
   }
   async function addGrantToMyGrants(grantId) {
     // which sub-status?
@@ -80,8 +106,7 @@ describe('t1', function() {
     driver.navigate().refresh();
     await driver.manage().window().maximize()
     let myGrants = await getMyGrants()
-    let allGrants = await getAllGrants()
-    let newGrantId = await findNewGrant(myGrants, allGrants) // Find a grant not in that list.
+    let newGrantId = await findNewGrant(myGrants) // Find a grant not in that list.
     await addGrantToMyGrants(newGrantId)
     await verifyGrantInList(newGrantId)
     await removeGrantFromMyGrants(newGrantId)
