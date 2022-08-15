@@ -21,11 +21,11 @@ describe('t1', function() {
   afterEach(async function() {
     await driver.quit();
   })
-  async function getGrantCount() {
+  async function getGrantCount(xpath) {
     let numGrants = 0
     let retries = 30
     while (retries > 0 && numGrants == 0) {
-      let ele = await driver.wait(until.elementLocated(By.xpath("/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/button")), 10000)
+      let ele = await driver.wait(until.elementLocated(By.xpath(xpath)), 10000)
       let txt = await ele.getText()
       let counts = txt.split(' of ')
       if (counts.length != 2) {
@@ -43,9 +43,8 @@ describe('t1', function() {
     let myGrants = await driver.wait(until.elementLocated(By.linkText(tabName)), 10000)
     await myGrants.click()
   } 
-  async function getGrantIdAtIndex(idList, rowIndex) {
-    let ele = await driver.wait(until.elementLocated(By.xpath(
-        '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[2]/table/tbody/tr[' + rowIndex  + ']/td[1]')), 10000)
+  async function getGrantIdAtIndex(rowIndex, xpathPrefix) {
+    let ele = await driver.wait(until.elementLocated(By.xpath(xpathPrefix + rowIndex  + ']/td[1]')), 10000)
     return await ele.getText()
   } 
   async function goToNextPage() {
@@ -55,11 +54,11 @@ describe('t1', function() {
   }
   async function getMyGrants() {
     await goToTab("My Grants")
-    let numMyGrants = await getGrantCount()
+    let numMyGrants = await getGrantCount("/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/button")
     let ret = new Set()
     let rowIndex = 1
     while (numMyGrants > 0) {
-      ret.add(await getGrantIdAtIndex(ret, rowIndex))
+      ret.add(await getGrantIdAtIndex(rowIndex, '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[2]/table/tbody/tr['))
       rowIndex++
       if (rowIndex > 10) {
         await goToNextPage()
@@ -71,16 +70,18 @@ describe('t1', function() {
   }
   async function findNewGrant(myGrants) {
     await goToTab("Grants")
-    let numGrants = await getGrantCount()
+    let numGrants = await getGrantCount("/html/body/div/div/div[1]/section/div[4]/button")
     let rowIndex = 1
     while (numGrants > 0) {
-      grantId = await getGrantIdAtIndex(ret, rowIndex)
-      if (!myGrants.has(grantID)) {
+      let grantId = await getGrantIdAtIndex(rowIndex, '/html/body/div/div/div[1]/section/div[3]/table/tbody/tr[')
+      if (!myGrants.has(grantId)) {
         return grantId
       }
       rowIndex++
       if (rowIndex > 10) {
-        await goToNextPage()
+        let ele = await driver.wait(until.elementLocated(By.xpath(
+          '//*[@id="app"]/div/div[1]/section/div[4]/button')), 10000)
+        await ele.click()
         rowIndex = 1
       }
       numGrants--
