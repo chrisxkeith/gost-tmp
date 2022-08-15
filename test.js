@@ -79,6 +79,7 @@ describe('t1', function() {
       }
       rowIndex++
       if (rowIndex > 10) {
+        // TODO: verify this xpath
         let ele = await driver.wait(until.elementLocated(By.xpath(
           '//*[@id="app"]/div/div[1]/section/div[4]/button')), 10000)
         await ele.click()
