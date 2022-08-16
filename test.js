@@ -48,6 +48,7 @@ describe('t1', function() {
     return await ele.getText()
   } 
   async function goToNextPage() {
+    // TODO: find button with "Next" text instead of xpath.
     let ele = await driver.wait(until.elementLocated(By.xpath(
       '/html/body/div/div/div[1]/div/div[2]/div[1]/section/div[3]/ul/li[4]/button')), 10000)
     await ele.click()
@@ -79,7 +80,7 @@ describe('t1', function() {
       }
       rowIndex++
       if (rowIndex > 10) {
-        // TODO: verify this xpath
+        // TODO: verify this xpath when more than 2 pages of grant listings
         let ele = await driver.wait(until.elementLocated(By.xpath(
           '//*[@id="app"]/div/div[1]/section/div[4]/button')), 10000)
         await ele.click()
