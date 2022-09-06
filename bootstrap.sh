@@ -1,5 +1,5 @@
 # Must run some manual steps first, see:
-# https://github.com/usdigitalresponse/usdr-gost/wiki/Setting-up-a-development-environment-on-Windows-(WSL)
+# https://github.com/usdigitalresponse/usdr-gost/wiki/Setting-up-a-development-environment-on-Windows-using-WSL
 
 # Automate as much of WSL setup as possible.
 # If anything fails, bail out.
