@@ -13,7 +13,7 @@ curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 export NVM_DIR="$HOME/.nvm"                                 ; if [ $? -ne 0 ] ; then exit -6 ; fi
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
-nvm install 14.19.0                                         ; if [ $? -ne 0 ] ; then exit -6 ; fi
+nvm install 16.14.0                                         ; if [ $? -ne 0 ] ; then exit -6 ; fi
 npm i yarn@^1.22.4 -g                                       ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
 cd packages/client                                          ; if [ $? -ne 0 ] ; then exit -6 ; fi
