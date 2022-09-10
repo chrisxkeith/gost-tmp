@@ -17,7 +17,5 @@ nvm install 16.14.0                                         ; if [ $? -ne 0 ] ; 
 nvm alias default node                                      ; if [ $? -ne 0 ] ; then exit -6 ; fi
 npm i yarn@^1.22.4 -g                                       ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
-cd packages/client                                          ; if [ $? -ne 0 ] ; then exit -6 ; fi
-cp .env.example .env                                        ; if [ $? -ne 0 ] ; then exit -6 ; fi
-cd ../server                                                ; if [ $? -ne 0 ] ; then exit -6 ; fi
-cat .env.example | grep -v "^#." > .env                     ; if [ $? -ne 0 ] ; then exit -6 ; fi
+cp packages/client/.env.example ../.env.client              ; if [ $? -ne 0 ] ; then exit -6 ; fi
+cat packages/server/.env.example | grep -v "^#." > ../.env.server ; if [ $? -ne 0 ] ; then exit -6 ; fi
