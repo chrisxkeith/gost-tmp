@@ -22,3 +22,4 @@ yarn test:apis                                          ; if [ $? -ne 0 ] ; then
 cd ../..                                                ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn start:client &
 yarn debug:server
+
