@@ -13,7 +13,6 @@ cd packages/server                                      ; if [ $? -ne 0 ] ; then
 # Just run it again.
 
 yarn test                                               ; if [ $? -ne 0 ] ; then exit -6 ; fi
-yarn test:apis                                          ; if [ $? -ne 0 ] ; then exit -6 ; fi
 
 # No real tests? "0 passing (0ms)""
 # cd ../../packages/client                                ; if [ $? -ne 0 ] ; then exit -6 ; fi
@@ -22,4 +21,3 @@ yarn test:apis                                          ; if [ $? -ne 0 ] ; then
 cd ../..                                                ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn start:client &
 yarn debug:server
-
