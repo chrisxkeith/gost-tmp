@@ -22,3 +22,4 @@ yarn test                                               ; if [ $? -ne 0 ] ; then
 
 cd ../..                                                ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn start:client
+# Run 'yarn debug:server in a separate terminal window to see console output.'
