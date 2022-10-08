@@ -18,3 +18,5 @@ nvm alias default node                                      ; if [ $? -ne 0 ] ; 
 npm i yarn@^1.22.4 -g                                       ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
 cat packages/server/.env.example | grep -v "^#." > ../server.env.sh ; if [ $? -ne 0 ] ; then exit -6 ; fi
+
+#
