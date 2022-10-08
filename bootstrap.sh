@@ -5,6 +5,7 @@
 # If anything fails, bail out.
 # You may have to manually provide the sudo password the first time.
 
+set -x
 sudo apt install nodejs -y                                  ; if [ $? -ne 0 ] ; then exit -6 ; fi
 sudo apt install npm -y                                     ; if [ $? -ne 0 ] ; then exit -6 ; fi
 sudo apt install curl -y                                    ; if [ $? -ne 0 ] ; then exit -6 ; fi
@@ -17,6 +18,7 @@ nvm install 16.14.0                                         ; if [ $? -ne 0 ] ; 
 nvm alias default node                                      ; if [ $? -ne 0 ] ; then exit -6 ; fi
 npm i yarn@^1.22.4 -g                                       ; if [ $? -ne 0 ] ; then exit -6 ; fi
 yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
-cat packages/server/.env.example | grep -v "^#." > ../server.env.sh ; if [ $? -ne 0 ] ; then exit -6 ; fi
+cat packages/server/.env.example | grep -v "^#." > packages/server/.env ; if [ $? -ne 0 ] ; then exit -6 ; fi
+cat packages/client/.env.example | grep -v "^#." > packages/client/.env ; if [ $? -ne 0 ] ; then exit -6 ; fi
 
 #
