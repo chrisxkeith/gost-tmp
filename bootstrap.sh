@@ -21,4 +21,3 @@ yarn run setup                                              ; if [ $? -ne 0 ] ; 
 cat packages/server/.env.example | grep -v "^#." > packages/server/.env ; if [ $? -ne 0 ] ; then exit -6 ; fi
 cat packages/client/.env.example | grep -v "^#." > packages/client/.env ; if [ $? -ne 0 ] ; then exit -6 ; fi
 
-#
