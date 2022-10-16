@@ -69,9 +69,9 @@ class GrantGenerator:
                 if grant_num < 24:
                     f.write(',')
                 f.write('\n')
-                grant_id = grant_id + 10
-                open_date += one_day_delta
-                close_date -= one_day_delta
+                grant_id = grant_id - 10
+                open_date -= one_day_delta
+                close_date += one_day_delta
             f.write(']')
 
     def run(self):
