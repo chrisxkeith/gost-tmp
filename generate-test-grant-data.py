@@ -27,20 +27,20 @@ class GrantGenerator:
     def generate(self):
         grant = {
             'status': 'inbox',
-            'grand_id' : 'to come',
-            'grant_number' :'grant-number-'
-            'agency_code': 'NSF',
+            'grant_id' : 'to come',
+            'grant_number' :'grant-number-',
+            'agency_code' : 'NSF',
             'award_ceiling': '6500',
             'cost_sharing': 'No',
-            'title' : 'Test Grant '
+            'title' : 'Test Grant ',
             'cfda_list': '47.050',
-            'open_date' :  'to come'
-            'close_date' :  'to come'
+            'open_date' :  'to come',
+            'close_date' :  'to come',
             'notes': 'auto-inserted by script',
             'search_terms': '[in title/desc]+',
             'reviewer_name': 'none',
             'opportunity_category': 'Discretionary',
-            'description' : '<p>Test Grant Description</p>'
+            'description' : '<p>Test Grant Description</p>',
             'eligibility_codes': '25',
             'opportunity_status': 'posted',
             'raw_body': 'raw body',
@@ -53,16 +53,17 @@ class GrantGenerator:
         with open(fn, 'a') as f:
             f.write('[\n')
             grant_id = 666666
+            date_format = '%Y-%m-%d'
             open_date = datetime(2021, 8, 11)
             close_date = datetime(2021, 11, 3)
             one_day_delta = timedelta(days=1)
             for grant_num in range(25):
                 grant_id_str = str(grant_id)
-                grant['grand_id'] = grant_id_str
+                grant['grant_id'] = grant_id_str
                 grant['grant_number'] = 'grant-number-' + grant_id_str
                 grant['title'] = 'Test Grant ' + grant_id_str
-                grant['open_date'] = open_date.isoformat()
-                grant['close_date'] = close_date.isoformat()
+                grant['open_date'] = open_date.strftime(date_format)
+                grant['close_date'] = close_date.strftime(date_format)
                 grant['description'] = '<p>Test Grant Description ' + grant_id_str + '</p>'
                 f.write(json.dumps(grant, indent = 2))
                 if grant_num < 24:
