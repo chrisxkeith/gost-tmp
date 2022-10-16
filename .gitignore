@@ -1,4 +1,5 @@
 *_x.sh
 *.sql
 *.csv
+*test-data.js*
 node_modules/**
