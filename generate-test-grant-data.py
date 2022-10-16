@@ -27,14 +27,20 @@ class GrantGenerator:
     def generate(self):
         grant = {
             'status': 'inbox',
+            'grand_id' : 'to come',
+            'grant_number' :'grant-number-'
             'agency_code': 'NSF',
             'award_ceiling': '6500',
             'cost_sharing': 'No',
+            'title' : 'Test Grant '
             'cfda_list': '47.050',
+            'open_date' :  'to come'
+            'close_date' :  'to come'
             'notes': 'auto-inserted by script',
             'search_terms': '[in title/desc]+',
             'reviewer_name': 'none',
             'opportunity_category': 'Discretionary',
+            'description' : '<p>Test Grant Description</p>'
             'eligibility_codes': '25',
             'opportunity_status': 'posted',
             'raw_body': 'raw body',
