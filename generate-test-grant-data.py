@@ -1,4 +1,5 @@
 ''' Generate grant data for testing https://github.com/usdigitalresponse/usdr-gost/issues/425
+Still have to select and 'tab' to get around VSC automatic reformatting
 '''
 
 from datetime import datetime
@@ -26,7 +27,7 @@ class GrantGenerator:
     def writeObj(self, f, grant):
         f.write('    {\n')
         for key, value in grant.items():
-            v = '      ' + key + ' : ' + "'" + value + "',\n"
+            v = '        ' + key + ': ' + "'" + value + "',\n"
             f.write(v)
         f.write('    },\n')
 
