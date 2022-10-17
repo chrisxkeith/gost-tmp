@@ -4,7 +4,6 @@
 from datetime import datetime
 from datetime import timedelta
 import time
-import json
 import os
 
 class GrantGenerator:
@@ -23,6 +22,13 @@ class GrantGenerator:
         minutes = round(totalSeconds / 60)
         seconds = round(totalSeconds % 60)
         return '{0:0>2}:{1:0>2}'.format(minutes, seconds)
+
+    def writeObj(self, f, grant):
+        f.write('    {\n')
+        for key, value in grant.items():
+            v = '      ' + key + ' : ' + "'" + value + "',\n"
+            f.write(v)
+        f.write('    },\n')
 
     def generate(self):
         grant = {
@@ -47,11 +53,10 @@ class GrantGenerator:
             'created_at': '2021-08-11 11:30:38.89828-07',
             'updated_at': '2021-08-11 12:30:39.531-07',
         }
-        fn = 'grant-test-data.js'
+        fn = 'grant-test-data.json'
         if os.path.exists(fn):
             os.remove(fn)
         with open(fn, 'a') as f:
-            f.write('[\n')
             grant_id = 666666
             date_format = '%Y-%m-%d'
             open_date = datetime(2021, 8, 11)
@@ -65,14 +70,10 @@ class GrantGenerator:
                 grant['open_date'] = open_date.strftime(date_format)
                 grant['close_date'] = close_date.strftime(date_format)
                 grant['description'] = '<p>Test Grant Description ' + grant_id_str + '</p>'
-                f.write(json.dumps(grant, indent = 2))
-                if grant_num < 24:
-                    f.write(',')
-                f.write('\n')
+                self.writeObj(f, grant)
                 grant_id = grant_id - 10
                 open_date -= one_day_delta
                 close_date += one_day_delta
-            f.write(']')
 
     def run(self):
         self.log('Started')
