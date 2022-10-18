@@ -73,8 +73,8 @@ class GrantGenerator:
                 grant['description'] = '<p>Test Grant Description ' + grant_id_str + '</p>'
                 self.writeObj(f, grant)
                 grant_id = grant_id - 10
-                open_date -= one_day_delta
-                close_date += one_day_delta
+                open_date += one_day_delta
+                close_date -= one_day_delta
 
     def run(self):
         self.log('Started')
