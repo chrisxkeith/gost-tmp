@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "jsonfile": "^6.1.0"
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jsonfile": "^6.1.0",
+    "process": "^0.11.10",
+    "xml-stream": "^0.4.5",
+    "yauzl": "^2.10.0"
   }
 }

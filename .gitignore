@@ -3,3 +3,5 @@
 *.csv
 *test-data.js*
 node_modules/**
+*.xml
+*.zip
