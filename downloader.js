@@ -65,17 +65,18 @@ function createRow(grantFromXML) {
             ? parseInt(grantFromXML.AwardCeiling, 10) : undefined,
         cost_sharing: grantFromXML.CostSharingOrMatchingRequirement,
         title: grantFromXML.OpportunityTitle,
-        cfda_list: grantFromXML.CFDANumbers, // TODO: verify
+        cfda_list: grantFromXML.CFDANumbers, // TODO: Couldn't find any grants with multiple numbers. See https://github.com/usdigitalresponse/usdr-gost/blob/836eb737fa9a353515eb8fde4ef7f47eaf81c0e1/packages/server/src/lib/grantscraper/index.js#L22
         open_date: sqlDateFromDate(grantFromXML.PostDate),
         close_date: sqlDateFromDate(grantFromXML.CloseDate) || '2100-01-01',
         notes: 'auto-inserted by script',
-        search_terms: 'TODO',
+        search_terms: '', // TODO: Now unused?
         reviewer_name: 'none',
         opportunity_category: grantFromXML.OpportunityCategory,
         description: grantFromXML.Description,
-        eligibility_codes: 'TODO',
-        opportunity_status: 'TODO',
+        eligibility_codes: grantFromXML.EligibleApplicants,
+        opportunity_status: '??? TODO',
         raw_body: null,
+        // TODO : add agency_name : grantFromXML.AgencyName,
     };
 }
 
@@ -106,11 +107,6 @@ function writeSQL(grantFromXML) {
     console.log(sql);
 }
 
-// eslint-disable-next-line no-unused-vars
-function writeSomething(grantFromXML) {
-    console.log(`${grantFromXML.OpportunityNumber}`);
-}
-
 function getAwardInterval(preAwardIntervals, grant) {
     if (grant && grant.PostDate && grant.CloseDate && grant.CloseDate !== '01012099') {
         const openedDate = dateFromStr(grant.PostDate);
@@ -120,8 +116,8 @@ function getAwardInterval(preAwardIntervals, grant) {
             const grantDetails = `award interval (${days} days) for: '${grant.OpportunityTitle}', \
 grant.PostDate ${grant.PostDate}, grant.CloseDate: ${grant.CloseDate}, \
 grant.LastUpdatedDate: ${grant.LastUpdatedDate}`;
-            // Throw away bad data.
-            if (days > 3650) {
+            // Warn about possible bad data.
+            if (days > 365 * 11) {
                 console.log(`Large ${grantDetails}`);
             } else if (days < 1) {
                 console.log(`Small ${grantDetails}`);
@@ -176,7 +172,7 @@ function loadData(xmlFileName) {
     if (env.GRANTS_SCRAPER_DATE_RANGE) {
         dateRange = parseInt(env.GRANTS_SCRAPER_DATE_RANGE, 10);
     } else {
-        dateRange = 365;
+        dateRange = 365 * 20; // Process all grants in file.
     }
     logIt(`Starting processing for grants back ${dateRange} days`);
     const stream = fs.createReadStream(xmlFileName);
@@ -184,6 +180,7 @@ function loadData(xmlFileName) {
     let totalGrantCount = 0;
     let processedGrantCount = 0;
     const preAwardIntervals = [];
+    const cfdaEntries = new Set();
     xml.on('endElement: OpportunitySynopsisDetail_1_0', (grant) => {
         totalGrantCount += 1;
         const postDate = dateFromStr(grant.PostDate);
@@ -191,6 +188,7 @@ function loadData(xmlFileName) {
         days = Math.round(days);
         if (days <= dateRange) {
             getAwardInterval(preAwardIntervals, grant);
+            cfdaEntries.add(grant.CFDANumbers);
             processedGrantCount += 1;
         }
     });
@@ -206,6 +204,11 @@ function loadData(xmlFileName) {
         const avg = Math.round(totalDays / preAwardIntervals.length);
         logIt(`# grants: ${preAwardIntervals.length}, min: ${min} days, max: ${max} days, median: ${median(preAwardIntervals)}, avg: ${avg} days`);
         logIt(`Finished processing ${processedGrantCount} grants from: ${xmlFileName}, totalGrantCount: ${totalGrantCount}`);
+        for (const item of cfdaEntries) {
+            if (item && item.length > 6) {
+                logIt(item);
+            }
+        }
     });
 }
 
