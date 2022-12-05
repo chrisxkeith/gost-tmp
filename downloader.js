@@ -54,7 +54,16 @@ function sqlDateFromDate(dateStr) {
     return `${ye}-${mo}-${da}`;
 }
 
-// eslint-disable-next-line no-unused-vars
+function createRawBody(grantFromXML) {
+    const body = {
+        synopsis : {
+            agency_name : grantFromXML.AgencyName,
+            awardFloor : grantFromXML.AwardFloor
+        }
+    };
+    return JSON.stringify(body);
+}
+
 function createRow(grantFromXML) {
     return {
         status: 'inbox',
@@ -75,8 +84,7 @@ function createRow(grantFromXML) {
         description: grantFromXML.Description,
         eligibility_codes: grantFromXML.EligibleApplicants,
         opportunity_status: '??? TODO',
-        raw_body: null,
-        // TODO : add agency_name : grantFromXML.AgencyName,
+        raw_body: createRawBody(grantFromXML), 
     };
 }
 
@@ -107,6 +115,7 @@ function writeSQL(grantFromXML) {
     console.log(sql);
 }
 
+// eslint-disable-next-line no-unused-vars
 function getAwardInterval(preAwardIntervals, grant) {
     if (grant && grant.PostDate && grant.CloseDate && grant.CloseDate !== '01012099') {
         const openedDate = dateFromStr(grant.PostDate);
@@ -166,7 +175,7 @@ const median = (arr) => {
     return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
 };
 
-function loadData(xmlFileName) {
+function loadData(xmlFileName, updateFunc) {
     const now = new Date();
     let dateRange;
     if (env.GRANTS_SCRAPER_DATE_RANGE) {
@@ -179,7 +188,9 @@ function loadData(xmlFileName) {
     const xml = new XmlStream(stream);
     let totalGrantCount = 0;
     let processedGrantCount = 0;
+    // eslint-disable-next-line no-unused-vars
     const preAwardIntervals = [];
+    // eslint-disable-next-line no-unused-vars
     const cfdaEntries = new Set();
     xml.on('endElement: OpportunitySynopsisDetail_1_0', (grant) => {
         totalGrantCount += 1;
@@ -187,8 +198,10 @@ function loadData(xmlFileName) {
         let days = (now.getTime() - postDate.getTime()) / msPerDay;
         days = Math.round(days);
         if (days <= dateRange) {
-            getAwardInterval(preAwardIntervals, grant);
-            cfdaEntries.add(grant.CFDANumbers);
+            // getAwardInterval(preAwardIntervals, grant);
+            // cfdaEntries.add(grant.CFDANumbers);
+            const row = createRow(grant);
+            updateFunc(row);
             processedGrantCount += 1;
         }
     });
@@ -202,7 +215,7 @@ function loadData(xmlFileName) {
         const min = Math.min(...preAwardIntervals);
         const max = Math.max(...preAwardIntervals);
         const avg = Math.round(totalDays / preAwardIntervals.length);
-        logIt(`# grants: ${preAwardIntervals.length}, min: ${min} days, max: ${max} days, median: ${median(preAwardIntervals)}, avg: ${avg} days`);
+        // logIt(`# grants: ${preAwardIntervals.length}, min: ${min} days, max: ${max} days, median: ${median(preAwardIntervals)}, avg: ${avg} days`);
         logIt(`Finished processing ${processedGrantCount} grants from: ${xmlFileName}, totalGrantCount: ${totalGrantCount}`);
         for (const item of cfdaEntries) {
             if (item && item.length > 6) {
@@ -212,7 +225,7 @@ function loadData(xmlFileName) {
     });
 }
 
-function unzipFile(zipFn) {
+function unzipFile(zipFn, updateFunc) {
     const xmlFn = `${zipFn.substring(0, zipFn.length - 3)}xml`;
     const xmlStream = fs.createWriteStream(xmlFn);
     yauzl.open(zipFn, { lazyEntries: true }, (err, zipfile) => {
@@ -231,7 +244,7 @@ function unzipFile(zipFn) {
                     });
                     readStream.on('finish', () => {
                         // readFieldNames(xmlFn);
-                        loadData(xmlFn);
+                        loadData(xmlFn, updateFunc);
                     });
                     readStream.pipe(xmlStream);
                 });
@@ -240,7 +253,7 @@ function unzipFile(zipFn) {
     });
 }
 
-function downloadFile() {
+function downloadFile(updateFunc) {
     let zipFn = `GrantsDBExtract${getFileDateStr()}v2.zip`;
     // Can manually check list at https://www.grants.gov/xml-extract.html
     const url = `https://www.grants.gov/extract/${zipFn}`;
@@ -250,7 +263,7 @@ function downloadFile() {
     zipFn = `${path}${zipFn}`;
 
     if (fs.existsSync(zipFn)) {
-        unzipFile(zipFn);
+        unzipFile(zipFn, updateFunc);
     } else {
         logIt(`Starting download for ${url}`);
         https.get(url, (res) => {
@@ -261,7 +274,7 @@ function downloadFile() {
                 theStream.close();
                 // TO eventually DO: check if file contains '<title>404 Not Found</title>', log error if so.
                 logIt(`Finished download for ${url}`);
-                unzipFile(zipFn);
+                unzipFile(zipFn, updateFunc);
             }).on('error', (e) => {
                 console.error(`Error when writing "${zipFn}": ${e}`);
             });
@@ -271,4 +284,8 @@ function downloadFile() {
     }
 }
 
-downloadFile();
+function updateRow(grant) {
+    // console.log(JSON.stringify(grant));
+}
+
+downloadFile(updateRow);
