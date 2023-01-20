@@ -1,3 +1,5 @@
+echo "Only for non-docker environment"
+exit 0
 # Get latest, make sure it runs OK on my machine.
 # May have to give sudo password.
 
