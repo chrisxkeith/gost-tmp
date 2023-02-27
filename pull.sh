@@ -1,4 +1,4 @@
-# Requires Docker Desktop running on Windows.
+# May require Docker Desktop running on Windows.
 
 date
 set -x
