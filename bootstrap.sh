@@ -17,6 +17,8 @@ export NVM_DIR="$HOME/.nvm"                                 ; if [ $? -ne 0 ] ; 
 nvm install 16.14.0                                         ; if [ $? -ne 0 ] ; then exit -6 ; fi
 nvm alias default node                                      ; if [ $? -ne 0 ] ; then exit -6 ; fi
 npm i yarn@^1.22.4 -g                                       ; if [ $? -ne 0 ] ; then exit -6 ; fi
-yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
+
+# Not needed any more, given Docker?
+# yarn run setup                                              ; if [ $? -ne 0 ] ; then exit -6 ; fi
 # cat packages/server/.env.example | grep -v "^#." > packages/server/.env ; if [ $? -ne 0 ] ; then exit -6 ; fi
 # cat packages/client/.env.example | grep -v "^#." > packages/client/.env ; if [ $? -ne 0 ] ; then exit -6 ; fi
