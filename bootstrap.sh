@@ -6,6 +6,7 @@
 # You may have to manually provide the sudo password the first time.
 
 set -x
+sudo apt update                                             ; if [ $? -ne 0 ] ; then exit -6 ; fi
 sudo apt install nodejs -y                                  ; if [ $? -ne 0 ] ; then exit -6 ; fi
 sudo apt install npm -y                                     ; if [ $? -ne 0 ] ; then exit -6 ; fi
 sudo apt install curl -y                                    ; if [ $? -ne 0 ] ; then exit -6 ; fi
