@@ -1,4 +1,4 @@
-# May require Docker Desktop running on Windows.
+# Pull and do other chores to get a working server.
 
 date
 set -x
